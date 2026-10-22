@@ -1,56 +1,239 @@
-# Welcome to your Expo app 👋
+# 🚚 DashDrop
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+DashDrop is a React Native delivery operations control center built to practice mobile architecture, asynchronous data flows, mutations, filtering and operational state management.
 
-## Get started
+The project is part of a hands-on React Native learning lab.
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+- Delivery operations dashboard
+- Dynamic delivery detail screens
+- Delivery status timeline
+- Courier information
+- Global network metrics
+- Search and operational filters
+- Pull-to-refresh
+- Loading and error states
+- Retry flows
+- Simulated asynchronous service layer
+- Delivery status mutations
+- Incident resolution
+- Optimistic priority updates
+- Automatic rollback when a mutation fails
+- Protection against stale async responses
+- Dashboard synchronization after navigation
 
-2. Start the app
+## 🏗️ Architecture
 
-   ```bash
-   npx expo start
-   ```
+DashDrop separates UI, domain logic and data access.
 
-In the output, you'll find options to open the app in a
+    Screen
+      ↓
+    Feature hook
+      ↓
+    Service
+      ↓
+    Data source
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+The UI does not access mock data directly.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+The current service uses an in-memory data store to simulate a backend, making it possible to replace the mock implementation with a real API later without rewriting the screens.
 
-## Get a fresh project
+## 📦 Project Structure
 
-When you're ready, run:
+    src/
+    ├── app/
+    │   ├── _layout.tsx
+    │   ├── index.tsx
+    │   └── deliveries/
+    │       └── [id].tsx
+    │
+    ├── components/
+    │   ├── DeliveryCard.tsx
+    │   ├── DeliveryFilters.tsx
+    │   └── PriorityControl.tsx
+    │
+    ├── features/
+    │   └── deliveries/
+    │       ├── deliveryHelpers.ts
+    │       ├── mockDeliveries.ts
+    │       ├── useDeliveries.ts
+    │       └── useDelivery.ts
+    │
+    ├── hooks/
+    │   └── useDebouncedValue.ts
+    │
+    ├── services/
+    │   └── deliveryService.ts
+    │
+    ├── theme/
+    │   └── colors.ts
+    │
+    └── types/
+        └── delivery.ts
 
-```bash
-npm run reset-project
-```
+## 🔄 Async Data Flow
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+DashDrop simulates network latency and asynchronous operations.
 
-### Other setup steps
+The application handles:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+- Initial loading
+- Background refresh
+- Query loading
+- Mutation loading
+- Service errors
+- Retry flows
+- Race-condition protection
 
-## Learn more
+Each async concern has its own state instead of relying on a single global loading flag.
 
-To learn more about developing your project with Expo, look at the following resources:
+## ⚡ Optimistic UI
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Priority changes use an optimistic update strategy.
 
-## Join the community
+    user action
+    ↓
+    UI updates immediately
+    ↓
+    service request
+    ↓
+    success → keep new value
+    failure → rollback
 
-Join our community of developers creating universal apps.
+This provides faster perceived interaction while preserving data consistency.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 🔎 Search and Filters
+
+The dashboard supports:
+
+- All deliveries
+- Active deliveries
+- Issues
+- Delivered operations
+- Search by order
+- Customer
+- Destination
+- Courier
+- Vehicle
+
+Search uses a reusable debounce hook before sending the query to the service layer.
+
+## 📊 Global Metrics
+
+Operational metrics are calculated independently from the filtered delivery list.
+
+This means search and filters affect the visible results without changing the global network summary.
+
+Metrics include:
+
+- Active operations
+- Delivered operations
+- Delivery issues
+- Total operations
+
+## 📱 Screenshots
+
+### Operations Dashboard
+
+<p align="center">
+  <img src="./docs/screenshots/dashboard.png" width="320" alt="DashDrop operations dashboard" />
+</p>
+
+### Search and Filters
+
+<p align="center">
+  <img src="./docs/screenshots/filters.png" width="320" alt="DashDrop delivery filters" />
+</p>
+
+### Delivery Detail
+
+<p align="center">
+  <img src="./docs/screenshots/delivery-detail.png" width="320" alt="DashDrop delivery detail" />
+</p>
+
+### Incident Control
+
+<p align="center">
+  <img src="./docs/screenshots/issue-resolution.png" width="320" alt="DashDrop incident resolution" />
+</p>
+
+## 🎨 Visual Direction
+
+DashDrop uses a logistics control-center visual language.
+
+The interface combines:
+
+- Dark navy surfaces
+- Electric cyan accents
+- Operational amber
+- Green success states
+- Red incident states
+- Compact technical labels
+- High-contrast operational metrics
+
+## 🛠️ Tech Stack
+
+- React Native
+- Expo SDK 57
+- Expo Router
+- React
+- TypeScript
+- react-native-safe-area-context
+
+## 📚 What I Practiced
+
+- Expo Router
+- Dynamic routes
+- Mobile navigation lifecycle
+- TypeScript domain modeling
+- Feature-based architecture
+- Service abstraction
+- Custom hooks
+- Async loading and errors
+- Retry strategies
+- Pull-to-refresh
+- Mutations
+- Optimistic UI
+- Rollback strategies
+- Debouncing
+- Search queries
+- Operational filters
+- Race-condition protection
+- Derived global metrics
+- Synchronization between screens
+
+## ⚠️ Current Limitations
+
+DashDrop is a learning project and not a production logistics platform.
+
+- Data is simulated locally.
+- There is no real backend.
+- Mutations are stored only in memory.
+- Data resets when the JavaScript runtime restarts.
+- Authentication is not implemented.
+- Live GPS tracking is not included.
+
+## 🚀 Run Locally
+
+Requirements:
+
+    Node.js 22.19.0
+    npm
+    Expo Go
+
+Install dependencies:
+
+    npm install
+
+Start Expo:
+
+    npx expo start
+
+Open the project using Expo Go on Android.
+
+## 👨‍💻 Author
+
+Víctor Hugo Segundo Aguilar
+
+Frontend Developer focused on React, Angular, JavaScript and TypeScript, expanding into React Native and mobile application architecture.
